@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Классы · Мини‑ЛМС{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h1>Классы</h1>
+
+    <p>
+      <a href="{{ url_for('class_new') }}" class="btn btn-primary">Новый класс</a>
+    </p>
+
+    {% if not classes %}
+      <p class="muted">Пока нет ни одного класса.</p>
+    {% else %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Создан</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cls in classes %}
+            <tr>
+              <td>{{ cls.id }}</td>
+              <td>{{ cls.name }}</td>
+              <td>{{ cls.created_at[:10] if cls.created_at else '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </section>
+{% endblock %}

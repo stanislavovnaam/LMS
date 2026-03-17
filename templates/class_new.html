@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Новый класс · Мини‑ЛМС{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h1>Новый класс</h1>
+
+    {% if error %}
+      <p class="bad">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('class_create') }}" class="form">
+      <div class="form-group">
+        <label for="name">Название класса</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Создать класс</button>
+    </form>
+
+    <p style="margin-top: 16px;">
+      <a href="{{ url_for('class_list') }}">К списку классов</a>
+    </p>
+  </section>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи · Админ{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Пользователи</h1>
+
+    <h2>Создать пользователя</h2>
+    <form method="post" action="{{ url_for('admin_user_create') }}" class="form form-row">
+        <div class="form-group">
+            <label for="new_username">Логин</label>
+            <input type="text" id="new_username" name="username" required minlength="2" placeholder="username" />
+        </div>
+        <div class="form-group">
+            <label for="new_password">Пароль</label>
+            <input type="password" id="new_password" name="password" required placeholder="••••••" />
+        </div>
+        <div class="form-group">
+            <label for="new_role">Роль</label>
+            <select id="new_role" name="role">
+                <option value="student">Ученик (student)</option>
+                <option value="teacher">Учитель (teacher)</option>
+                <option value="manager">Менеджер (manager)</option>
+                <option value="admin">Мастер (admin)</option>
+            </select>
+        </div>
+
+        <div class="form-group" style="align-self: flex-end;">
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </div>
+    </form>
+
+    <p class="muted">
+        Архивировать — пользователь не может войти, но его запись остаётся в таблице.
+        Восстановить — снять архив, снова разрешить вход.
+        Удалить навсегда — полностью удалить пользователя из таблицы (без возможности восстановления).
+    </p>
+
+    <table class="table">...</table>
+</section>
+{% endblock %}
+<td class="actions-cell">
+    {% if u.archived_at %}
+    <form method="post" action="{{ url_for('admin_user_restore', user_id=u.id) }}" class="inline-form">
+        <button type="submit" class="btn btn-sm">Восстановить</button>
+    </form>
+    {% elif u.role != 'admin'  %}
+    <form method="post" action="{{ url_for('admin_user_archive', user_id=u.id) }}" class="inline-form">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Заархивировать пользователя? Он не сможет войти.')">
+            Архивировать
+        </button>
+    </form>
+    {% endif %}
+    {% if u.role != 'admin' %}
+    <form method="post" action="{{ url_for('admin_user_delete', user_id=u.id) }}" class="inline-form">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Удалить пользователя безвозвратно? Это действие нельзя отменить.')">
+            Удалить навсегда
+        </button>
+    </form>
+    {% endif %}
+
+</td>
+{% endblock %}

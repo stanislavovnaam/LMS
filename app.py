@@ -1,133 +1,142 @@
-from flask import Flask, render_template, session, request, url_for, redirect
-
-from werkzeug.security import check_password_hash, generate_password_hash
-
+from flask import Flask, render_template,request, redirect, url_for, session, abort, request, flash
 import sqlite3
+from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
+from db import get_conn, init_db, insert_test_user, show_table
+from auth_utils import(
+    create_user,
+    ensure_master,
+    is_logged_in,
+    current_user,
+    is_admin,
+    get_registration_open,
+    is_manager,
+    is_master
+)
 
-from functools import wraps
+from views_auth import(
+    login_form_view,
+    login_view,
+    logout_view,
+    register_form_view,
+    register_view,
+    dashboard_view
+)
 
-DB_PATH = "database.db"
+from views_admin import(
+    admin_settings_view,
+    admin_settings_save_view,
+    admin_users_view,
+    admin_user_create_view,
+    admin_user_archive_view,
+    admin_user_restore_view,
+    admin_user_delete_view
+   )
+    
+from views_classes import (
+    class_list_view,
+    class_new_view,
+    class_create_view
+)    
+
 app = Flask(__name__)
-app.secret_key = "super-secret-key-change-me"
+app.secret_key = "dev-secret"
 
-def get_conn():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    
+@app.get("/login")
+def login_form():
+    return login_form_view()
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    conn = get_conn()
-    row = conn.execute("SELECT 1 AS ok").fetchone()
-    rows = conn.execute("SELECT * FROM users")
-    for r in rows:
-        print(dict(r))
-    conn.close()
-    return render_template(
-            "index.html",
-            db_ok=row is not None and row["ok"] == 1,
-            current_user=current_user,
-        )
-def init_db():
-    conn = get_conn()
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
-            password_hash TEXT NOT NULL,
-            role TEXT NOT NULL CHECK (role IN ('student', 'teacher', 'manager', 'admin')),
-            archived_at TEXT,
-            created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
-        )
-    """)
-    conn.commit()
-    conn.close()
-    
-def ensure_master():
-    """Создать пользователя master (admin), если ещё нет ни одного admin."""
-    conn = get_conn()
-    row = conn.execute("SELECT id FROM users WHERE role = 'admin' LIMIT 1").fetchone()
-    if row is not None:
-        conn.close()
-        return
-     #password_hash = generate_password_hash(plain_password)
-    #if not check_password_hash(user["password_hash"], entered_password):
-        #print("Неверный пароль!")
-    conn.execute(
-        "INSERT INTO users (username, password_hash, role) VALUES (?, ?, 'admin')",
-        ("master", generate_password_hash("master")),
-    )
-    conn.commit()
-    conn.close()
-    
-def get_conn():  # Если нет — добавьте
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn    
-    
-@app.route("/login", methods=["GET", "POST"])  # ← Вот оно!
+@app.post("/login")
 def login():
-    if request.method == "GET":
-        if "user_id" in session:
-            return redirect("/")
-        return render_template("login.html", next=request.args.get("next"))
-    
-    # POST
-    username = (request.form.get("username") or "").strip()
-    password = request.form.get("password") or ""
-    if not username or not password:
-        return render_template("login.html", error="Введите логин и пароль"), 400
-    
-    conn = get_conn()
-    user = conn.execute(
-        "SELECT id, password_hash, role FROM users WHERE username = ? AND archived_at IS NULL",
-        (username,)
-    ).fetchone()
-    conn.close()
-    
-    if not user or not check_password_hash(user["password_hash"], password):
-        return render_template("login.html", error="Неверный логин или пароль"), 401
-    
-    session.clear()
-    session["user_id"] = user["id"]
-    session["role"] = user["role"]
-    
-    next_url = request.form.get("next") or ("/")
-    return redirect(next_url)
+    return login_view()
 
 @app.get("/logout")
 def logout():
-    session.clear()
-    return redirect("/")
+    return logout_view()
 
-def current_user():
-    uid = session.get("user_id")
-    if uid is None:
-        return None
-    conn = get_conn()
-    user = conn.execute(
-        "SELECT id, username, role FROM users WHERE id = ? AND archived_at IS NULL",
-        (uid,),
-    ).fetchone()
-    conn.close()
-    return user
-
-def login_required(f):
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect(url_for("login_form", next=request.url))
-        return f(*args, **kwargs)
-    return wrapped
-
-@app.get("/dashboard")
-@login_required
+@app.route("/dashboard")
 def dashboard():
+    return dashboard_view()
+
+@app.get("/admin/settings")
+def admin_settings():
+    return admin_settings_view()
+
+@app.post("/admin/settings")
+def admin_settings_save():
+    return admin_settings_save_view()
+
+@app.get("/admin/users")
+def admin_users():
+    return admin_users_view()
+
+@app.post("/admin/users/create")
+def admin_user_create():
+    return admin_user_create_view()
+
+@app.post("/admin/users/<int:user_id>/archive")
+def admin_user_archive(user_id):
+    return admin_user_archive_view(user_id)
+    
+@app.post("/admin/users/<int:user_id>/restore")
+def admin_user_restore(user_id):
+    return admin_user_restore_view(user_id)
+
+@app.post("/admin/users/<int:user_id>/delete")
+def admin_user_delete(user_id):
+    return admin_user_delete_view(user_id)
+
+@app.get("/classes")
+def class_list():
+    return class_list_view()
+
+
+@app.get("/classes/new")
+def class_new():
+    return class_new_view()
+
+
+@app.post("/classes/new")
+def class_create():
+    return class_create_view()
+
+@app.get("/register")
+def register_form():
+    return register_form_view()
+
+@app.post("/register")
+def register():
+    return register_view()
+
+@app.context_processor
+def inject():
+    return {
+        "current_user": current_user,
+        "is_admin": is_admin,
+        "is_manager": is_manager,
+        "is_master": is_master,
+        "registration_open": get_registration_open(),
+    }
+
+
+@app.route("/")
+def home():
+    conn = get_conn()
+    row = conn.execute("SELECT 1 AS ok").fetchone()
+    conn.close()
+    
     user = current_user()
-    return render_template("dashboard.html", user=user)
+
+    db_ok = row is not None and row["ok"] == 1
+    return render_template("home.html", db_ok=db_ok, user=user)
 
 if __name__ == "__main__":
-    init_db()
+    init_db() 
     ensure_master()
+    #insert_test_user() 
+    #print(show_table())
+    
+    print(show_table())
+
     app.run(debug=True)

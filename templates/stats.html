@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Статистика · Мини‑ЛМС{% endblock %}
+{% block content %}
+  <section class="card">
+    <h1>Статистика</h1>
+    <ul>
+      <li>Учеников: {{ count_students }}</li>
+      <li>Учителей: {{ count_teachers }}</li>
+      <li>Занятий: {{ count_lessons }}</li>
+      <li>Домашних заданий: {{ count_homework }}</li>
+      <li>Сдач: {{ count_submissions }}</li>
+    </ul>
+  </section>
+{% endblock %}

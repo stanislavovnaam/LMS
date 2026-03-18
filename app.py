@@ -56,6 +56,15 @@ from views_lessons import (
     lesson_show_view,
     lesson_attendance_save_view,
 )
+
+from views_homework import (
+    homework_new_view,
+    homework_create_view,
+    homework_show_view,
+    homework_submit_view,
+    homework_grades_save_view,
+)
+
 app = Flask(__name__)
 app.secret_key = "dev-secret"
 
@@ -75,6 +84,14 @@ def logout():
 @app.route("/dashboard")
 def dashboard():
     return dashboard_view()
+
+@app.get("/progress")
+def progress():
+    return progress_view()
+
+@app.get("/stats")
+def stats():
+    return stats_view()
 
 @app.get("/admin/settings")
 def admin_settings():
@@ -188,9 +205,7 @@ def home():
 if __name__ == "__main__":
     init_db() 
     ensure_master()
-    #insert_test_user() 
-    #print(show_table())
-    
+    insert_test_user() 
     print(show_table())
 
     app.run(debug=True)

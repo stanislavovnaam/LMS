@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ homework.title }} · Мини‑ЛМС{% endblock %}
+{% block content %}
+<section class="card">
+    <h1>{{ homework.title }}</h1>
+    <p><a href="{{ url_for('lesson_show', lesson_id=homework.lesson_id) }}">← К занятию: {{ lesson_title }}</a></p>
+    {% if homework.description %}<p>{{ homework.description }}</p>{% endif %}
+    {% if homework.url %}<p>Ссылка: <a href="{{ homework.url }}">{{ homework.url }}</a></p>{% endif %}
+    <p><strong>Срок сдачи:</strong> {{ homework.due_date[:19] if homework.due_date else '' }}</p>
+
+    {% if can_still_submit %}
+    <h2>Сдать работу</h2>
+    <form method="post" action="{{ url_for('homework_submit', homework_id=homework.id) }}">
+        <div class="form-group">
+            <label for="text">Текст</label>
+            <textarea id="text" name="text" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="url">Ссылка (по желанию)</label>
+            <input type="url" id="url" name="url" />
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+    {% elif my_submission %}
+    <h2>Ваша сдача</h2>
+    <p>{{ my_submission.text or '—' }}</p>
+    {% if my_submission.url %}<p>Ссылка: <a href="{{ my_submission.url }}">{{ my_submission.url }}</a></p>{% endif %}
+    <p>Дата: {{ my_submission.created_at[:19] if my_submission.created_at else '' }}</p>
+    {% if my_submission.grade is not none %}
+    <p><strong>Оценка:</strong> {{ my_submission.grade }}</p>
+    {% if my_submission.feedback %}<p><strong>Комментарий:</strong> {{ my_submission.feedback }}</p>{% endif %}
+    {% endif %}
+    {% endif %}
+
+    {% if can_manage and submissions_list %}
+    <h2>Сдачи и оценки</h2>
+    <form method="post" action="{{ url_for('homework_grades_save', homework_id=homework.id) }}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ученик</th>
+                    <th>Текст / ссылка</th>
+                    <th>Дата</th>
+                    <th>Оценка (0–100)</th>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in submissions_list %}
+                <tr>
+                    <td>{{ s.username }}</td>
+                    <td>{{ s.text or '—' }}{% if s.url %} <a href="{{ s.url }}">ссылка</a>{% endif %}</td>
+                    <td>{{ s.created_at[:19] if s.created_at else '' }}</td>
+                    <td><input type="number" name="grade_{{ s.student_id }}" value="{{ s.grade if s.grade is not none else '' }}" min="0" max="100" /></td>
+                    <td><input type="text" name="feedback_{{ s.student_id }}" value="{{ s.feedback or '' }}" /></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Сохранить оценки</button>
+    </form>
+    {% endif %}
+</section>
+{% endblock %}

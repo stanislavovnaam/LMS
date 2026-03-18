@@ -16,9 +16,14 @@
             {% if current_user() %}
             <a href="{{ url_for('dashboard') }}">Дашборд</a>
             <a href="{{ url_for('lesson_list') }}">Занятия</a>
+            {% if current_user().role == 'student' %}
+            <a href="{{ url_for('progress') }}">Мой прогресс</a>
+            {% endif %}
             {% if is_manager() or is_master() %}
             <a href="{{ url_for('lesson_new') }}">Новое занятие</a>
             <a href="{{ url_for('class_list') }}">Классы</a>
+            <a href="{{ url_for('stats') }}">Статистика</a>
+            {% endif %}
             {% if is_admin() %}
             <a href="{{ url_for('admin_settings') }}">Настройки</a>
             <a href="{{ url_for('admin_users') }}">Пользователи</a>
@@ -30,6 +35,7 @@
             </span>
             {% else %}
             <a href="{{ url_for('login_form') }}">Вход</a>
+
             {% if registration_open %}
             <a href="{{ url_for('register') }}">Регистрация</a>
             {% endif %}
@@ -54,6 +60,8 @@
         {% block content %}
         {% endblock %}
     </main>
+
+
 </body>
 
 </html>

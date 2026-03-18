@@ -3,58 +3,125 @@
 {% block title %}Дашборд · Мини‑ЛМС{% endblock %}
 
 {% block content %}
-  <section class="card">
+<section class="card">
     <h1>Дашборд</h1>
     <p>Вы вошли как <strong>{{ user.username }}</strong> (роль: {{ user.role }}).</p>
 
     {% if user.role == 'student' %}
-      <h2>Для ученика</h2>
-      <p>
-        Здесь позже появятся ваши занятия, домашние задания и прогресс.
-        Пока что вы можете войти под менеджером или учителем, чтобы настроить систему.
-      </p>
+    <h2>Для ученика</h2>
+    <h3>Недавние занятия</h3>
+    {% if recent_lessons %}
+    <ul>
+        {% for les in recent_lessons %}
+        <li><a href="{{ url_for('lesson_show', lesson_id=les.id) }}">{{ les.title }}</a> ({{ les.scheduled_date[:10] if les.scheduled_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет занятий.</p>
+    {% endif %}
+    <h3>Недавние домашние задания</h3>
+    {% if recent_homework %}
+    <ul>
+        {% for hw in recent_homework %}
+        <li><a href="{{ url_for('homework_show', homework_id=hw.id) }}">{{ hw.title }}</a> (срок: {{ hw.due_date[:10] if hw.due_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет заданий.</p>
+    {% endif %}
+
 
     {% elif user.role == 'teacher' %}
-      <h2>Для учителя</h2>
-      <p>
-        Здесь позже появятся ваши занятия и список домашних заданий для проверки.
-      </p>
+    <h2>Для учителя</h2>
+    <h3>Недавние занятия</h3>
+    {% if recent_lessons %}
+    <ul>
+        {% for les in recent_lessons %}
+        <li><a href="{{ url_for('lesson_show', lesson_id=les.id) }}">{{ les.title }}</a> ({{ les.scheduled_date[:10] if les.scheduled_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет занятий.</p>
+    {% endif %}
+    <h3>Недавние домашние задания</h3>
+    {% if recent_homework %}
+    <ul>
+        {% for hw in recent_homework %}
+        <li><a href="{{ url_for('homework_show', homework_id=hw.id) }}">{{ hw.title }}</a> (срок: {{ hw.due_date[:10] if hw.due_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет заданий.</p>
+    {% endif %}
 
     {% elif user.role == 'manager' %}
-      <h2>Для менеджера</h2>
-      <p>
-        Вы можете создавать учебные классы, планировать занятия и смотреть общую статистику.
-      </p>
-      <ul>
+    <h2>Для менеджера</h2>
+    <h3>Недавние занятия</h3>
+    {% if recent_lessons %}
+    <ul>
+        {% for les in recent_lessons %}
+        <li><a href="{{ url_for('lesson_show', lesson_id=les.id) }}">{{ les.title }}</a> ({{ les.scheduled_date[:10] if les.scheduled_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет занятий.</p>
+    {% endif %}
+    <h3>Недавние домашние задания</h3>
+    {% if recent_homework %}
+    <ul>
+        {% for hw in recent_homework %}
+        <li><a href="{{ url_for('homework_show', homework_id=hw.id) }}">{{ hw.title }}</a> (срок: {{ hw.due_date[:10] if hw.due_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет заданий.</p>
+    {% endif %}
+    <ul>
         <li><a href="{{ url_for('class_list') }}">Список классов</a></li>
-      </ul>
-      <h3>Краткая статистика по пользователям</h3>
-      <ul>
+    </ul>
+    <h3>Краткая статистика по пользователям</h3>
+    <ul>
         <li>Учеников: {{ total_students }}</li>
         <li>Учителей: {{ total_teachers }}</li>
         <li>Менеджеров: {{ total_managers }}</li>
-      </ul>
+    </ul>
 
     {% elif user.role == 'admin' %}
-      <h2>Для мастера</h2>
-      <p>
-        Вы можете управлять пользователями и настраивать систему. В дальнейшем у мастера
-        будут доступны дополнительные отчёты и инструменты.
-      </p>
-      <ul>
+    <h2>Для мастера</h2>
+    <h3>Недавние занятия</h3>
+    {% if recent_lessons %}
+    <ul>
+        {% for les in recent_lessons %}
+        <li><a href="{{ url_for('lesson_show', lesson_id=les.id) }}">{{ les.title }}</a> ({{ les.scheduled_date[:10] if les.scheduled_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет занятий.</p>
+    {% endif %}
+    <h3>Недавние домашние задания</h3>
+    {% if recent_homework %}
+    <ul>
+        {% for hw in recent_homework %}
+        <li><a href="{{ url_for('homework_show', homework_id=hw.id) }}">{{ hw.title }}</a> (срок: {{ hw.due_date[:10] if hw.due_date else '' }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Нет заданий.</p>
+    {% endif %}
+    <ul>
         <li><a href="{{ url_for('admin_users') }}">Пользователи</a></li>
         <li><a href="{{ url_for('admin_settings') }}">Настройки регистрации</a></li>
         <li><a href="{{ url_for('class_list') }}">Список классов</a></li>
-      </ul>
-      <h3>Краткая статистика по пользователям</h3>
-      <ul>
+    </ul>
+    <h3>Краткая статистика по пользователям</h3>
+    <ul>
         <li>Учеников: {{ total_students }}</li>
         <li>Учителей: {{ total_teachers }}</li>
         <li>Менеджеров: {{ total_managers }}</li>
-      </ul>
+    </ul>
 
     {% else %}
-      <p>Для этой роли пока нет отдельного дашборда.</p>
+    <p>Для этой роли пока нет отдельного дашборда.</p>
     {% endif %}
-  </section>
+</section>
 {% endblock %}

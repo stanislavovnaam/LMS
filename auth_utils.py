@@ -1,16 +1,16 @@
 from flask import session
 from datetime import datetime
+from werkzeug.security import check_password_hash, generate_password_hash
 from db import get_conn
 
 def create_user(username, password, role):
-    """..."""
     password_hash = generate_password_hash(password)
 
     conn = get_conn()
-    conn.execute(
-        "INSERT INTO users ....",
+    row = conn.execute(
+        "INSERT INTO users  (username, password, role) VALUES (?, ?, ?)",
         (username, password_hash, role),
-    )
+    ).fetchone()
     conn.commit()
     conn.close()
     

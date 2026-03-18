@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Мой прогресс · Мини‑ЛМС{% endblock %}
+{% block content %}
+  <section class="card">
+    <h1>Мой прогресс</h1>
+    <p><strong>Посещаемость:</strong> {{ "%.0f"|format(attendance_pct) }}% (присутствовал на {{ present_count }} из {{ total_lessons }} занятий)</p>
+    <h2>Оценки</h2>
+    {% if not graded %}
+      <p class="muted">Пока нет оценённых сдач.</p>
+    {% else %}
+      <ul>
+        {% for g in graded %}
+          <li>
+            <a href="{{ url_for('homework_show', homework_id=g.homework_id) }}">{{ g.homework_title }}</a>
+            — срок: {{ g.due_date[:10] if g.due_date else '' }}, оценка: {{ g.grade }}
+          </li>
+        {% endfor %}
+      </ul>
+      {% if average_grade is not none %}
+        <p><strong>Средняя оценка:</strong> {{ average_grade }}</p>
+      {% endif %}
+    {% endif %}
+  </section>
+{% endblock %}

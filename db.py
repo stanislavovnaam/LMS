@@ -63,6 +63,18 @@ def init_db():
             PRIMARY KEY (student_id, lesson_id)
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS homework (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lesson_id INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+            title TEXT NOT NULL,
+            description TEXT,
+            url TEXT,
+            due_date TEXT NOT NULL,
+            created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+        )
+    """)
     conn.commit()
     conn.close()
     

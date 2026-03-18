@@ -39,6 +39,7 @@ from views_classes import (
     class_new_view,
     class_create_view
 )    
+
 from views_classes import (
     class_list_view,
     class_new_view,
@@ -128,6 +129,30 @@ def class_add_student(class_id):
 @app.post("/classes/<int:class_id>/students/remove")
 def class_remove_student(class_id):
     return class_remove_student_view(class_id)
+
+@app.get("/lessons")
+def lesson_list():
+    return lesson_list_view()
+
+
+@app.get("/lessons/new")
+def lesson_new():
+    return lesson_new_view()
+
+
+@app.post("/lessons/new")
+def lesson_create():
+    return lesson_create_view()
+
+
+@app.get("/lessons/<int:lesson_id>")
+def lesson_show(lesson_id):
+    return lesson_show_view(lesson_id)
+
+
+@app.post("/lessons/<int:lesson_id>/attendance")
+def lesson_attendance_save(lesson_id):
+    return lesson_attendance_save_view(lesson_id)
 
 @app.get("/register")
 def register_form():

@@ -57,6 +57,10 @@ def is_master():
     u = current_user()
     return u is not None and u["role"] == "admin"
 
+def is_teacher():
+    u = current_user()
+    return u is not None and u["role"] == "teacher"
+
 def get_registration_open():
     conn = get_conn()
     row = conn.execute("SELECT value FROM settings WHERE key = 'registration_open'").fetchone()

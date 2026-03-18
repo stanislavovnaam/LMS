@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Занятия · Мини‑ЛМС{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h1>Занятия</h1>
+
+    {% if is_manager() or is_master() %}
+      <p><a href="{{ url_for('lesson_new') }}" class="btn btn-primary">Новое занятие</a></p>
+    {% endif %}
+
+    {% if not lessons %}
+      <p class="muted">Нет занятий.</p>
+    {% else %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Название</th>
+            <th>Класс</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for les in lessons %}
+            <tr>
+              <td>{{ les.scheduled_date[:10] if les.scheduled_date else '' }}</td>
+              <td>{{ les.title }}</td>
+              <td>{{ les.class_name }}</td>
+              <td><a href="{{ url_for('lesson_show', lesson_id=les.id) }}">Открыть</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </section>
+{% endblock %}

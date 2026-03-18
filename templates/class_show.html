@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ cls.name }} · Мини‑ЛМС{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h1>Класс: {{ cls.name }}</h1>
+    <p><a href="{{ url_for('class_list') }}">← К списку классов</a></p>
+
+    <h2>Ученики в классе</h2>
+    {% if not students_in_class %}
+      <p class="muted">В классе пока нет учеников.</p>
+    {% else %}
+      <ul>
+        {% for u in students_in_class %}
+          <li>
+            {{ u.username }}
+            <form method="post" action="{{ url_for('class_remove_student', class_id=cls.id) }}" class="inline-form" style="display: inline;">
+              <input type="hidden" name="student_id" value="{{ u.id }}" />
+              <button type="submit" class="btn btn-sm">Убрать</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <h2>Добавить ученика</h2>
+    {% if not students_not_in_class %}
+      <p class="muted">Все ученики уже в этом классе или нет других учеников.</p>
+    {% else %}
+      <ul>
+        {% for u in students_not_in_class %}
+          <li>
+            {{ u.username }}
+            <form method="post" action="{{ url_for('class_add_student', class_id=cls.id) }}" class="inline-form" style="display: inline;">
+              <input type="hidden" name="student_id" value="{{ u.id }}" />
+              <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+{% endblock %}

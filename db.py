@@ -34,6 +34,35 @@ def init_db():
             created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS class_students (
+            class_id INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+            student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            PRIMARY KEY (class_id, student_id)
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS lessons (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            teacher_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            class_id INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+            scheduled_date TEXT NOT NULL,
+            duration INTEGER NOT NULL,
+            classroom TEXT,
+            created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+        )
+    """)   
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS attendance (
+            student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            lesson_id INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+            status TEXT NOT NULL CHECK (status IN ('present', 'absent')),
+            mark TEXT,
+            PRIMARY KEY (student_id, lesson_id)
+        )
+    """)
     conn.commit()
     conn.close()
     

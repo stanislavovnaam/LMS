@@ -51,7 +51,7 @@ def logout_view():
     return redirect(url_for("home"))
 
 def dashboard_view():
-    if not is_logged_in():
+     if not is_logged_in():
         return redirect(url_for("login_form", next=request.url))
 
     user = current_user()

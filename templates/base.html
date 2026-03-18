@@ -15,7 +15,9 @@
 
             {% if current_user() %}
             <a href="{{ url_for('dashboard') }}">Дашборд</a>
+            <a href="{{ url_for('lesson_list') }}">Занятия</a>
             {% if is_manager() or is_master() %}
+            <a href="{{ url_for('lesson_new') }}">Новое занятие</a>
             <a href="{{ url_for('class_list') }}">Классы</a>
             {% if is_admin() %}
             <a href="{{ url_for('admin_settings') }}">Настройки</a>
@@ -49,7 +51,8 @@
     {% endwith %}
 
     <main>
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
 </body>
 

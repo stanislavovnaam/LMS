@@ -11,7 +11,8 @@ from auth_utils import(
     is_admin,
     get_registration_open,
     is_manager,
-    is_master
+    is_master,
+    is_teacher
 )
 
 from views_auth import(
@@ -38,7 +39,22 @@ from views_classes import (
     class_new_view,
     class_create_view
 )    
+from views_classes import (
+    class_list_view,
+    class_new_view,
+    class_create_view,
+    class_show_view,
+    class_add_student_view,
+    class_remove_student_view,
+)
 
+from views_lessons import (
+    lesson_list_view,
+    lesson_new_view,
+    lesson_create_view,
+    lesson_show_view,
+    lesson_attendance_save_view,
+)
 app = Flask(__name__)
 app.secret_key = "dev-secret"
 
@@ -91,15 +107,27 @@ def admin_user_delete(user_id):
 def class_list():
     return class_list_view()
 
-
 @app.get("/classes/new")
 def class_new():
     return class_new_view()
 
-
 @app.post("/classes/new")
 def class_create():
     return class_create_view()
+
+@app.get("/classes/<int:class_id>")
+def class_show(class_id):
+    return class_show_view(class_id)
+
+
+@app.post("/classes/<int:class_id>/students/add")
+def class_add_student(class_id):
+    return class_add_student_view(class_id)
+
+
+@app.post("/classes/<int:class_id>/students/remove")
+def class_remove_student(class_id):
+    return class_remove_student_view(class_id)
 
 @app.get("/register")
 def register_form():
@@ -116,6 +144,7 @@ def inject():
         "is_admin": is_admin,
         "is_manager": is_manager,
         "is_master": is_master,
+        "is_teacher": is_teacher,
         "registration_open": get_registration_open(),
     }
 

@@ -75,6 +75,18 @@ def init_db():
             created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS submissions (
+            student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            homework_id INTEGER NOT NULL REFERENCES homework(id) ON DELETE CASCADE,
+            text TEXT,
+            url TEXT,
+            grade INTEGER,
+            feedback TEXT,
+            created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+            PRIMARY KEY (student_id, homework_id)
+        )
+    """)
     conn.commit()
     conn.close()
     

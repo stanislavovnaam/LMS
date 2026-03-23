@@ -1,0 +1,226 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #cdc3c2, #7e5e63);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    color: #263238;
+}
+
+header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #7e5e63;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+}
+
+header h1 {
+    margin: 0 0 8px 0;
+    font-size: 36px;
+}
+
+header h1 a {
+    color: #5a273b;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+header h1 a:hover {
+    text-decoration: underline;
+}
+
+/* Навигация */
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+}
+
+nav a {
+    color: #7e5e63;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+nav a:hover {
+    background-color: #cdc3c2;
+    color: #5a273b;
+}
+
+nav span {
+    margin-left: auto;
+    color: #7e5e63;
+    font-size: 13px;
+}
+
+nav span a {
+    color: #5a273b;
+}
+
+nav span a:hover {
+    text-decoration: underline;
+}
+
+/* Линия под шапкой */
+hr {
+    margin: 0;
+    border: none;
+    border-top: 1px solid #7e5e63;
+}
+
+/* Сообщения всплывания (flash) */
+.flash-container {
+    padding: 8px 20px;
+    background: #cdc3c2;
+    border-bottom: 1px solid #7e5e63;
+}
+
+.flash-message {
+    background: #ffffff;
+    color: #263238;
+    border-left: 2px solid #5a273b;
+    padding: 6px 10px;
+    margin: 4px 0;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+/* Основное содержимое */
+main {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Заголовок страницы */
+h1 {
+    margin: 0 0 16px 0;
+    color: #5a273b;
+    font-size: 32px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Карточки (формы, регистрации и т.п.) */
+.card {
+    width: 100%;
+    padding: 28px 24px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    border: 1px solid #7e5e63;
+    margin: 0 auto 20px auto;
+}
+
+.card h1 {
+    margin: 0 0 16px 0;
+    color: #5a273b;
+    font-size: 22px;
+    text-align: center;
+}
+
+.card p {
+    color: #424242;
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+.card a {
+    color: #5a273b;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.card a:hover {
+    text-decoration: underline;
+}
+
+.card label {
+    display: flex;
+    margin: 8px;
+    color: #7e5e63;
+    font-size: 14px;
+}
+
+.card input {
+    width: 100%;
+    border: 1px solid #cdc3c2;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 15px;
+    flex: 0.5;
+}
+
+.card input:focus {
+    outline: none;
+    border-color: #5a273b;
+    box-shadow: 0 0 6px rgba(90, 39, 59, 0.3);
+}
+
+.card button {
+    padding: 10px 16px;
+    background: linear-gradient(to right, #5a273b, #7e5e63);
+    color: whitesmoke;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 4px;
+    width: 100%;
+    flex: 2.5;
+}
+
+.card button:hover {
+    background: linear-gradient(to right, #4a1c2c, #5a273b);
+}
+
+.card .error,
+.card p[style*="darkred"] {
+    color: #c62828;
+    font-size: 15px;
+    width: 100%;
+}
+
+/* Таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+table th,
+table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #cdc3c2;
+}
+
+table th {
+    background-color: #cdc3c2;
+    color: #5a273b;
+}
+
+/* Кнопки в общем интерфейсе */
+button,
+button[type="submit"],
+input[type="submit"] {
+    padding: 8px 14px;
+    background: linear-gradient(to right, #5a273b, #7e5e63);
+    color: whitesmoke;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+button:hover,
+button[type="submit"]:hover,
+input[type="submit"]:hover {
+    background: linear-gradient(to right, #4a1c2c, #5a273b);
+}
+

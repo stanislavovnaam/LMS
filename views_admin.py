@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, abort, flash
-from auth_utils import is_logged_in, is_admin, get_registration_open, create_user
+from auth_utils import is_logged_in, is_admin, get_registration_open, create_user, current_user
 from db import get_conn
 from datetime import datetime
 import sqlite3
@@ -38,8 +38,10 @@ def admin_users_view():
         """
     ).fetchall()
     conn.close()
+    
+    u = users
 
-    return render_template("admin_users.html", users=users)
+    return render_template("admin_users.html", u = u)
 
 def admin_user_create_view():
     if not is_logged_in():
@@ -59,13 +61,18 @@ def admin_user_create_view():
         flash("Логин слишком короткий.")
         return redirect(url_for("admin_users"))
     
+    cur = current_user()
+    if cur and cur["role"] == "manager" and role == "manager":
+        flash("Менеджер не может назначать роль «менеджер». Создан пользователь с ролью «ученик».")
+        role = "student"
+    
     allowed_roles = ("student", "teacher", "manager", "admin")
     if role not in allowed_roles:
         role = "student"
 
     try:
         create_user(username, password, "user")
-        flash(f"Пользователь {username} создан.")
+        flash("Пользователь {username} создан.")
     except sqlite3.IntegrityError:
         flash("Такой логин уже занят.")
 
@@ -83,6 +90,11 @@ def admin_user_archive_view(user_id):
         conn.close()
         abort(404)
 
+    if u["role"] == "admin":
+        conn.close()
+        flash("Нельзя заархивировать мастер‑аккаунт.")
+        return redirect(url_for("admin_users"))    
+        
     now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     conn.execute("UPDATE users SET archived_at = ? WHERE id = ?", (now, user_id))
     conn.commit()
@@ -123,9 +135,13 @@ def admin_user_delete_view(user_id):
         abort(404)
 
     if u["role"] == "admin":
-        # Мастер‑аккаунт удалять нельзя
         conn.close()
         flash("Нельзя удалить мастер‑аккаунт.")
+        return redirect(url_for("admin_users"))
+    
+    if u["archived_at"] is None:
+        conn.close()
+        flash("Удалять можно только заархивированного пользователя. Сначала архивируйте.")
         return redirect(url_for("admin_users"))
 
     conn.execute("DELETE FROM users WHERE id = ?", (user_id,))

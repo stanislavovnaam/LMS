@@ -21,7 +21,9 @@ from views_auth import(
     logout_view,
     register_form_view,
     register_view,
-    dashboard_view
+    dashboard_view,
+    progress_view,
+    stats_view
 )
 
 from views_admin import(

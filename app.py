@@ -3,6 +3,8 @@ import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from db import get_conn, init_db, insert_test_user, show_table
+from dotenv import load_dotenv
+import os
 from auth_utils import(
     create_user,
     ensure_master,
@@ -67,8 +69,10 @@ from views_homework import (
     homework_grades_save_view,
 )
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = "dev-secret"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret")
 
     
 @app.get("/login")
@@ -199,15 +203,15 @@ def home():
     row = conn.execute("SELECT 1 AS ok").fetchone()
     conn.close()
     
-    user = current_user()
+    u = current_user()
 
     db_ok = row is not None and row["ok"] == 1
-    return render_template("home.html", db_ok=db_ok, user=user)
+    return u is not None and u["role"] == "admin"
+    return render_template("home.html", db_ok=db_ok, u=u)
 
 if __name__ == "__main__":
     init_db() 
     ensure_master()
-    insert_test_user() 
     print(show_table())
 
     app.run(debug=True)

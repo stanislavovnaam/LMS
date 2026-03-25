@@ -43,7 +43,6 @@ def login_view():
     session["user_id"] = user["id"]
     session["role"] = user["role"]
 
-    return redirect(url_for("home"))
     return redirect(url_for("dashboard"))
 
 def logout_view():

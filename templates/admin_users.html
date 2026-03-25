@@ -21,7 +21,7 @@
             <select id="new_role" name="role">
                 <option value="student">Ученик (student)</option>
                 <option value="teacher">Учитель (teacher)</option>
-                {% if is_master() %}
+                {% if is_master_user %}
                 <option value="manager">Менеджер (manager)</option>
                 <option value="admin">Мастер (admin)</option>
                 {% endif %}
@@ -45,26 +45,26 @@
             </tr>
         </thead>
         <tbody>
-            {% for u in users %}
+            {% for user in users %}
             <tr>
-                <td>{{ u.id }}</td>
-                <td>{{ u.username }}</td>
-                <td>{{ u.role }}</td>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role }}</td>
                 <td>
-                    {% if u.archived_at %}
+                    {% if user.archived_at %}
                     <span class="badge badge-deleted">В архиве</span>
                     {% else %}
                     Активен
                     {% endif %}
                 </td>
-                <td>{{ u.created_at[:10] if u.created_at else '' }}</td>
+                <td>{{ user.created_at[:10] if user.created_at else '' }}</td>
                 <td class="actions-cell">
-                {% if u.archived_at %}
-              <form method="post" action="{{ url_for('admin_user_restore', user_id=u.id) }}" class="inline-form">
+                {% if user.archived_at %}
+              <form method="post" action="{{ url_for('admin_user_restore', user_id=user.id) }}" class="inline-form">
                 <button type="submit" class="btn btn-sm">Восстановить</button>
               </form>
-            {% elif u.role != 'admin'  %}
-              <form method="post" action="{{ url_for('admin_user_archive', user_id=u.id) }}" class="inline-form">
+            {% elif user.role != 'admin'  %}
+              <form method="post" action="{{ url_for('admin_user_archive', user_id=user.id) }}" class="inline-form">
                 <button
                   type="submit"
                   class="btn btn-sm btn-danger"

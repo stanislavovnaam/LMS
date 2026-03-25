@@ -1,11 +1,25 @@
 import sqlite3
+from contextlib import contextmanager
+
+@contextmanager
+def get_conn():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row  
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 DB_PATH = "database.db"
 def get_conn():
     """Вернуть соединение с SQLite. Вызывающий обязан закрыть соединение."""
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    conn = sqlite3.connect("database.db", check_same_thread=False)
+    conn.row_factory = sqlite3.Row  
+    return conn 
 
 def init_db():
     """Создать таблицу users, если её ещё нет."""
@@ -94,7 +108,7 @@ def insert_test_user():
     """Добавить одного тестового пользователя (для проверки таблицы)."""
     conn = get_conn()
     conn.execute(
-        "INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, 'user')",
+        "INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, 'student')",
         ("testuser", "placeholder_hash"),
     )
     conn.commit()

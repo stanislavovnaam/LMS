@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, abort, flash
-from auth_utils import is_logged_in, is_admin, get_registration_open, create_user, current_user
+from auth_utils import is_logged_in, is_admin,is_master, get_registration_open, create_user, current_user
 from db import get_conn
 from datetime import datetime
 import sqlite3
@@ -30,18 +30,29 @@ def admin_users_view():
         abort(403)
 
     conn = get_conn()
-    users = conn.execute(
-        """
-        SELECT id, username, role, archived_at, created_at
-        FROM users
-        ORDER BY archived_at IS NULL DESC, username
-        """
-    ).fetchall()
-    conn.close()
+    cursor = conn.cursor()
     
-    u = users
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+    if not cursor.fetchone():
+        flash("Таблица users не существует!")
+        return render_template("admin_users.html", u=[])
+    
+    cursor.execute("SELECT COUNT(*) FROM users")
+    count = cursor.fetchone()[0]
+    print(f"Пользователей: {count}")  # В консоль
+    
+    with get_conn() as conn:
+        users = conn.execute("""
+            SELECT id, username, role, archived_at, created_at
+            FROM users ORDER BY archived_at IS NULL DESC, username
+        """).fetchall()
+        
+    print(f"Загружено строк: {len(users)}") 
+    print("Первые пользователи:", users[:2]) 
+    
+    conn.close()
+    return render_template("admin_users.html", users=users)
 
-    return render_template("admin_users.html", u = u)
 
 def admin_user_create_view():
     if not is_logged_in():
@@ -71,7 +82,7 @@ def admin_user_create_view():
         role = "student"
 
     try:
-        create_user(username, password, "user")
+        create_user(username, password, role)
         flash("Пользователь {username} создан.")
     except sqlite3.IntegrityError:
         flash("Такой логин уже занят.")
@@ -84,19 +95,24 @@ def admin_user_archive_view(user_id):
     if not is_admin():
         abort(403)
 
-    conn = get_conn()
-    u = conn.execute("SELECT id FROM users WHERE id = ?", (user_id,)).fetchone()
-    if u is None:
-        conn.close()
-        abort(404)
-
-    if u["role"] == "admin":
-        conn.close()
-        flash("Нельзя заархивировать мастер‑аккаунт.")
-        return redirect(url_for("admin_users"))    
+    with get_conn() as conn:
+        user_row = conn.execute(
+            "SELECT id, username, role, archived_at FROM users WHERE id = ?",
+            (user_id,)
+        ).fetchone()
+    if not user_row:
+        flash("Пользователь не найден")
+        return redirect(url_for("admin_users"))
+    
+    if user_row[2] == "admin": 
+            flash("Нельзя архивировать админа!")
+            return redirect(url_for("admin_users"))
         
     now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    conn.execute("UPDATE users SET archived_at = ? WHERE id = ?", (now, user_id))
+    conn.execute(
+            "UPDATE users SET archived_at = ? WHERE id = ?",
+            (datetime.now(), user_id)
+        )  
     conn.commit()
     conn.close()
 
@@ -110,8 +126,8 @@ def admin_user_restore_view(user_id):
         abort(403)
 
     conn = get_conn()
-    u = conn.execute("SELECT id FROM users WHERE id = ?", (user_id,)).fetchone()
-    if u is None:
+    u = conn.execute("SELECT id, role FROM users WHERE id = ?", (user_id,)).fetchone()
+    if u["role"] is None:
         conn.close()
         abort(404)
 

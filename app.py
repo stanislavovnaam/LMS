@@ -206,7 +206,6 @@ def home():
     u = current_user()
 
     db_ok = row is not None and row["ok"] == 1
-    return u is not None and u["role"] == "admin"
     return render_template("home.html", db_ok=db_ok, u=u)
 
 if __name__ == "__main__":

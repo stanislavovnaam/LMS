@@ -22,16 +22,16 @@
     {% if not homework_list %}
       <p class="muted">Пока нет домашних заданий.</p>
       {% if can_manage %}
-        <p><a href="{{ url_for('homework_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a> (маршрут будет в Части I)</p>
+        <p><a href="{{ url_for('lesson_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a> (маршрут будет в Части I)</p>
       {% endif %}
     {% else %}
       <ul>
         {% for hw in homework_list %}
-          <li><a href="{{ url_for('homework_show', homework_id=hw.id) }}">{{ hw.title }}</a></li>
+          <li><a href="{{ url_for('lesson_show', lesson_id=hw.id) }}">{{ hw.title }}</a></li>
         {% endfor %}
       </ul>
       {% if can_manage %}
-        <p><a href="{{ url_for('homework_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a></p>
+        <p><a href="{{ url_for('lesson_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a></p>
       {% endif %}
     {% endif %}
 

@@ -294,7 +294,7 @@ def home():
     return render_template("home.html", db_ok=db_ok, u=u)
 
 if __name__ == "__main__":
-    init_db() 
+    #init_db() 
     ensure_master()
     print(show_table())
 

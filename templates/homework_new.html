@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Новое ДЗ · Мини‑ЛМС{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h1>Новое домашнее задание</h1>
+  <p><a href="{{ url_for('lesson_show', lesson_id=lesson_id) }}">← К уроку</a></p>
+
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="{{ url_for('homework_create', lesson_id=lesson_id) }}">
+    <div class="mb-3">
+      <label class="form-label">Название задания <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" name="title" required 
+             value="{{ request.form.title if request.form else '' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Описание</label>
+      <textarea class="form-control" name="description" rows="4">{{ request.form.description if request.form else '' }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Срок сдачи</label>
+      <input type="datetime-local" class="form-control" name="deadline" 
+             value="{{ request.form.deadline if request.form else '' }}">
+    </div>
+
+    <input type="hidden" name="lesson_id" value="{{ lesson_id }}">
+
+    <button type="submit" class="btn btn-primary">Создать ДЗ</button>
+    <a href="{{ url_for('lesson_show', lesson_id=lesson_id) }}" class="btn btn-secondary">Отмена</a>
+  </form>
+</section>
+{% endblock %}

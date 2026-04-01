@@ -58,7 +58,7 @@ from views_lessons import (
     lesson_new_view,
     lesson_create_view,
     lesson_show_view,
-    lesson_attendance_save_view,
+    lesson_attendance_save_view
 )
 
 from views_homework import (
@@ -73,6 +73,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret")
+
     
 @app.get("/login")
 def login_form():
@@ -175,6 +176,26 @@ def lesson_show(lesson_id):
 @app.post("/lessons/<int:lesson_id>/attendance")
 def lesson_attendance_save(lesson_id):
     return lesson_attendance_save_view(lesson_id)
+
+@app.route('/lesson/<int:lesson_id>/homework/new', methods=['GET', 'POST'])
+def homework_new(lesson_id):
+    return homework_new_view(lesson_id)
+
+@app.route('/homework/<int:lesson_id>')
+def homework_create(lesson_id):
+    return homework_create_view(lesson_id)
+
+@app.route('/homework/<int:lesson_id>')
+def homework_show(lesson_id):
+    return homework_show_view(lesson_id)
+
+@app.route('/homework/<int:homework_id>')
+def homework_submit(homework_id):
+    return homework_submit_view(homework_id)
+
+@app.route('/homework/<int:homework_id>')
+def homework_grades_save(homework_id):
+    return homework_grades_save_view(homework_id)
 
 @app.get("/register")
 def register_form():

@@ -3,7 +3,7 @@
 {% block title %}{{ lesson.title }} · Мини‑ЛМС{% endblock %}
 
 {% block content %}
-  <section class="card">
+<section class="card">
     <h1>{{ lesson.title }}</h1>
     <p><a href="{{ url_for('lesson_list') }}">← К списку занятий</a></p>
 
@@ -11,61 +11,63 @@
     <p><strong>Дата:</strong> {{ lesson.scheduled_date[:10] if lesson.scheduled_date else '' }}</p>
     <p><strong>Длительность:</strong> {{ lesson.duration }} мин</p>
     {% if lesson.classroom %}
-      <p><strong>Аудитория:</strong> {{ lesson.classroom }}</p>
+    <p><strong>Аудитория:</strong> {{ lesson.classroom }}</p>
     {% endif %}
     <p><strong>Учитель:</strong> {{ teacher_name or '—' }}</p>
     {% if lesson.description %}
-      <p><strong>Описание:</strong><br />{{ lesson.description }}</p>
+    <p><strong>Описание:</strong><br />{{ lesson.description }}</p>
     {% endif %}
 
     <h2>Домашние задания</h2>
     {% if not homework_list %}
-      <p class="muted">Пока нет домашних заданий.</p>
-      {% if can_manage %}
-        <p><a href="{{ url_for('lesson_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a> (маршрут будет в Части I)</p>
-      {% endif %}
-    {% else %}
-      <ul>
-        {% for hw in homework_list %}
-          <li><a href="{{ url_for('lesson_show', lesson_id=hw.id) }}">{{ hw.title }}</a></li>
-        {% endfor %}
-      </ul>
-      {% if can_manage %}
-        <p><a href="{{ url_for('lesson_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a></p>
-      {% endif %}
+    <p class="muted">Пока нет домашних заданий.</p>
+    {% if can_manage %}
+    <p><a href="{{ url_for('homework_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a></p>
     {% endif %}
-
+    {% else %}
+    <ul>
+        {% for hw in homework_list %}
+        <li>{{ hw.title }}
+            <a href="{{ url_for('homework_show', lesson_id=lesson.id) }}">подробнее</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if can_manage %}
+    <p><a href="{{ url_for('homework_new', lesson_id=lesson.id) }}">Добавить домашнее задание</a></p>
+    {% endif %}
+    {% endif %}
+    
     {% if can_manage and students_attendance %}
-      <h2>Посещаемость</h2>
-      <form method="post" action="{{ url_for('lesson_attendance_save', lesson_id=lesson.id) }}" class="form">
+    <h2>Посещаемость</h2>
+    <form method="post" action="{{ url_for('lesson_attendance_save', lesson_id=lesson.id) }}" class="form">
         <table class="table">
-          <thead>
-            <tr>
-              <th>Ученик</th>
-              <th>Статус</th>
-              <th>Пометка</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for s in students_attendance %}
-              <tr>
-                <td>{{ s.username }}</td>
-                <td>
-                  <select name="status_{{ s.id }}">
-                    <option value="present" {% if s.status == 'present' %}selected{% endif %}>Присутствовал</option>
-                    <option value="absent" {% if s.status == 'absent' %}selected{% endif %}>Отсутствовал</option>
-                  </select>
-                </td>
-                <td><input type="text" name="mark_{{ s.id }}" value="{{ s.mark or '' }}" placeholder="по желанию" /></td>
-              </tr>
-            {% endfor %}
-          </tbody>
+            <thead>
+                <tr>
+                    <th>Ученик</th>
+                    <th>Статус</th>
+                    <th>Пометка</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students_attendance %}
+                <tr>
+                    <td>{{ s.username }}</td>
+                    <td>
+                        <select name="status_{{ s.id }}">
+                            <option value="present" {% if s.status == 'present' %}selected{% endif %}>Присутствовал</option>
+                            <option value="absent" {% if s.status == 'absent' %}selected{% endif %}>Отсутствовал</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="mark_{{ s.id }}" value="{{ s.mark or '' }}" placeholder="по желанию" /></td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
         <button type="submit" class="btn btn-primary">Сохранить посещаемость</button>
-      </form>
+    </form>
     {% elif can_manage %}
-      <h2>Посещаемость</h2>
-      <p class="muted">В классе нет учеников.</p>
+    <h2>Посещаемость</h2>
+    <p class="muted">В классе нет учеников.</p>
     {% endif %}
-  </section>
+</section>
 {% endblock %}

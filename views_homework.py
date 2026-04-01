@@ -65,21 +65,21 @@ def homework_create_view(lesson_id):
     if not title or not due_date:
         conn.close()
         return render_template(
-            "homework_new.html",
-            lesson_id=lesson_id,
-            lesson=lesson,
-            error="Укажите название и срок сдачи.",
-        )
+            "homework_new.html", 
+             lesson_id=lesson_id, 
+             lesson=lesson, 
+             error="Название обязательно!")
 
-    u = current_user()
-    conn.execute(
-        """INSERT INTO homework (lesson_id, title, description, url, due_date, created_by)
-           VALUES (?, ?, ?, ?, ?, ?)""",
-        (lesson_id, title, description or None, url, due_date, u["id"]),
+    homework = Homework(
+        lesson_id=lesson_id,
+        title=title,
+        description=description,
+        deadline=deadline if deadline else None
     )
-    conn.commit()
-    conn.close()
-    return redirect(url_for("lesson_show", lesson_id=lesson_id))
+    db.session.add(homework)
+    db.session.commit()
+    
+    return redirect(url_for('homework_show', lesson_id=lesson_id))
 
 def homework_show_view(homework_id):
     if not is_logged_in():

@@ -1,5 +1,6 @@
 from flask import session
 from datetime import datetime
+import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from db import get_conn
 import os
@@ -60,6 +61,11 @@ def is_teacher():
     return u is not None and u["role"] == "teacher"
 
 def get_registration_open():
-     with get_conn() as conn:  
-        row = conn.execute("SELECT value FROM settings WHERE key = 'registration_open'").fetchone()
-        return row is not None and row["value"] == "1"
+    try:
+        with get_conn() as conn:
+            row = conn.execute(
+                "SELECT value FROM settings WHERE key = 'registration_open'"
+            ).fetchone()
+            return row is not None and row["value"] == "1"
+    except sqlite3.OperationalError:
+        return False

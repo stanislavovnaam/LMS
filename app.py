@@ -74,7 +74,9 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret")
 
-    
+init_db()
+ensure_master()
+
 @app.get("/login")
 def login_form():
     return login_form_view()
@@ -229,7 +231,7 @@ def home():
     return render_template("home.html", db_ok=db_ok, u=u)
 
 if __name__ == "__main__":
-    init_db() 
+    init_db()
     ensure_master()
     print(show_table())
 

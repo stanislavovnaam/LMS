@@ -1,5 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
+from pathlib import Path
+DB_PATH = Path(__file__).resolve().parent / "database.db"
 
 @contextmanager
 def get_conn():
